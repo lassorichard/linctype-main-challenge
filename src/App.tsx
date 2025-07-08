@@ -1,68 +1,57 @@
-import React, { ChangeEvent, useCallback, useEffect, useState } from "react";
+import React from "react";
+import TypingInput from "./components/TypingInput";
+import ScoreBoard from "./components/ScoreBoard";
+import TopScores from "./components/TopScores";
+import LiveFeedback from "./components/LiveFeedback";
+import { useTypingTest } from "./hooks/useTypingTest";
 import "./App.css";
 
+/**
+ * App component is the main entry point for the typing test application.
+ *
+ * How to use:
+ * <App />
+ *
+ * This component initializes the typing test with a predefined sentence and manages the state of the test.
+ */
 const App: React.FC = () => {
-  const [typeTest] = useState("This is the sentence to type");
-  const [words, setWords] = useState(typeTest.split(" "));
-  const [enteredText, setEnteredText] = useState("");
-  const [correctCount, setCorrectCount] = useState(0);
-  const [started, setStarted] = useState(false);
-  const [startTime, setStartTime] = useState(new Date());
-  const [wordsPerMinute, setWordsPerMinute] = useState(0);
-
-  const checkFinished = () => {
-    if (!words.length) {
-      if (startTime) {
-        const timeMillis: number = new Date().getTime() - startTime.getTime();
-        const wpm = calcWordsPerMinute(typeTest.length, timeMillis);
-        setWordsPerMinute(wpm);
-      }
-    }
-  }
-
-  useEffect(() => {
-    if (words.length !== 0) return;
-    checkFinished();
-  }, [words, checkFinished]);
-
-  const calcWordsPerMinute = (charsTyped: number, millis: number): number =>
-    Math.floor(charsTyped / 5 / (millis / 60000));
-
-  const onWordChange = (e: ChangeEvent<HTMLInputElement>): void => {
-    if (started) {
-      setStarted(true);
-      setStartTime(new Date());
-    }
-    setEnteredText(e.currentTarget.value.trim());
-    if (enteredText === words[0]) {
-      setCorrectCount(correctCount + 1);
-      setEnteredText("");
-      setWords(words.slice(1));
-    }
-  };
+  const typeTest = "This is the sentence to type";
+  const {
+    enteredText,
+    fullInput,
+    correctCount,
+    started,
+    wpm,
+    accuracy,
+    score,
+    topScores,
+    onInputChange,
+    reset,
+  } = useTypingTest(typeTest);
 
   return (
     <div className="App">
-      <h1>
-        {wordsPerMinute
-          ? `You typed ${correctCount} words at ${wordsPerMinute} WPM.`
-          : "Test Your Typing Speed, Scrub!"}
-      </h1>
-      <h3>
-        {wordsPerMinute ? `Refresh to retake the test!` : `Type the following:`}
-      </h3>
+      <h1>Test Your Typing Speed, Scrub!</h1>
+      {wpm !== null && accuracy !== null && score !== null && (
+        <ScoreBoard
+          wpm={wpm}
+          accuracy={accuracy}
+          score={score}
+          correctCount={correctCount}
+        />
+      )}
+      <h3>{wpm !== null ? "Try again!" : "Type the following:"}</h3>
       <h6>
-        {words.map((word, index) =>
-          word === words[0] ? (
-            <em className="current-word" key={index}>
-              {word}{" "}
-            </em>
-          ) : (
-            word + " "
-          )
-        )}
+        <LiveFeedback expectedText={typeTest} typedText={fullInput} />
       </h6>
-      <input name="text" value={enteredText} onChange={onWordChange} />
+      {wpm === null && (
+        <TypingInput value={enteredText} onChange={onInputChange} />
+      )}
+      <div style={{ marginTop: "16px" }}>
+        {wpm === null && started && <button onClick={reset}>Cancel</button>}
+        {wpm !== null && <button onClick={reset}>Restart</button>}
+      </div>
+      {topScores.length > 0 && wpm !== null && <TopScores topScores={topScores} />}
     </div>
   );
 };
