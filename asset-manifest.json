@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/linctype-main-challenge/static/css/main.f855e6bc.css",
+    "main.js": "/linctype-main-challenge/static/js/main.88ad4af2.js",
+    "static/js/453.fc6ed543.chunk.js": "/linctype-main-challenge/static/js/453.fc6ed543.chunk.js",
+    "index.html": "/linctype-main-challenge/index.html",
+    "main.f855e6bc.css.map": "/linctype-main-challenge/static/css/main.f855e6bc.css.map",
+    "main.88ad4af2.js.map": "/linctype-main-challenge/static/js/main.88ad4af2.js.map",
+    "453.fc6ed543.chunk.js.map": "/linctype-main-challenge/static/js/453.fc6ed543.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.f855e6bc.css",
+    "static/js/main.88ad4af2.js"
+  ]
+}
